@@ -33,23 +33,19 @@ System do scrapowania i zarządzania artykułami z różnych serwisów informacy
 git clone <repository-url>
 cd Scrapper
 
-# Utwórz wirtualne środowisko (opcjonalnie)
 python -m venv venv
-source venv/bin/activate  # Linux/Mac
-venv\Scripts\activate     # Windows
+source venv/bin/activate  
+venv\Scripts\activate     
 
-# Zainstaluj zależności
 pip install -r requirements.txt
 ```
 
 ### 2. Konfiguracja bazy danych
 
 ```bash
-# Uruchom migracje
 python manage.py makemigrations
 python manage.py migrate
 
-# (Opcjonalnie) Stwórz superuser dla panelu administracyjnego
 python manage.py createsuperuser
 ```
 
@@ -113,66 +109,6 @@ self.target_urls = [
     "https://take-group.github.io/example-blog-without-ssr/jak-kroic-piers-z-kurczaka-aby-uniknac-suchych-kawalkow-miesa",
     "https://take-group.github.io/example-blog-without-ssr/co-mozna-zrobic-ze-schabu-oprocz-kotletow-5-zaskakujacych-przepisow"
 ]
-```
-
-## Docker
-
-### Docker Compose z PostgreSQL
-
-Stwórz plik `docker-compose.yml`:
-
-```yaml
-version: '3.8'
-
-services:
-  db:
-    image: postgres:15
-    environment:
-      POSTGRES_DB: crawler_db
-      POSTGRES_USER: crawler_user
-      POSTGRES_PASSWORD: crawler_password
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-  web:
-    build: .
-    command: python manage.py runserver 0.0.0.0:8000
-    volumes:
-      - .:/app
-    ports:
-      - "8000:8000"
-    depends_on:
-      - db
-    environment:
-      - DATABASE_URL=postgresql://crawler_user:crawler_password@db:5432/crawler_db
-
-volumes:
-  postgres_data:
-```
-
-### Dockerfile
-
-```dockerfile
-FROM python:3.11-slim
-
-WORKDIR /app
-
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-COPY . .
-
-EXPOSE 8000
-
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
-```
-
-### Uruchomienie z Docker:
-
-```bash
-docker-compose up --build
 ```
 
 ## Testy

@@ -1,13 +1,8 @@
-# 🐳 Docker Setup
-
-Instrukcje uruchomienia projektu z użyciem Docker i Docker Compose.
-
 ## Wymagania
 
 - Docker 20.10+
 - Docker Compose 2.0+
 
-## Szybki Start
 
 ### 1. Uruchomienie z Docker Compose
 
@@ -29,8 +24,6 @@ docker-compose up db
 
 ## Zmienne środowiskowe
 
-Docker Compose używa następujących zmiennych:
-
 ```yaml
 environment:
   - DEBUG=1
@@ -40,8 +33,8 @@ environment:
 
 ### Porty
 
-- **8000** - Aplikacja Django
-- **5432** - PostgreSQL
+- 8000 - Aplikacja Django
+- 5432 - PostgreSQL
 
 ### Wolumeny
 
@@ -60,7 +53,7 @@ environment:
 - Automatyczne tworzenie bazy `crawler_db`
 - Health check
 
-### `scraper` - Scraper (opcjonalny)
+### `scraper` - Scraper
 - Uruchamia scrapowanie artykułów
 - Dostępny przez profil `scraping`
 
