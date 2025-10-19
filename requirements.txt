@@ -1,0 +1,18 @@
+# Django Framework
+Django>=5.0,<6.0
+djangorestframework>=3.14.0
+
+# Web Scraping
+requests>=2.28.0
+beautifulsoup4>=4.11.0
+lxml>=4.9.0
+
+# Date/Time handling
+pytz>=2023.3
+
+# Development dependencies (optional)
+django-debug-toolbar>=4.0.0
+
+# Production dependencies (optional)
+gunicorn>=20.1.0
+psycopg2-binary>=2.9.0  # For PostgreSQL

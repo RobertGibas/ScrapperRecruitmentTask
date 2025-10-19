@@ -1,0 +1,116 @@
+{% extends 'crawler/base.html' %}
+
+{% block title %}Strona główna - Crawler Artykułów{% endblock %}
+
+{% block content %}
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ total_websites }}</div>
+        <div class="stat-label">Serwisów</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ total_articles }}</div>
+        <div class="stat-label">Artykułów</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ total_sessions }}</div>
+        <div class="stat-label">Sesji crawlowania</div>
+    </div>
+</div>
+
+<div class="api-section">
+    <h2>REST API Endpoints</h2>
+    <p>Oto dostępne endpointy API:</p>
+    
+    <div class="api-endpoint">
+        <strong>GET</strong> /api/articles/ - Lista wszystkich artykułów
+    </div>
+    
+    <div class="api-endpoint">
+        <strong>GET</strong> /api/articles/{id}/ - Szczegóły artykułu
+    </div>
+    
+    <div class="api-endpoint">
+        <strong>GET</strong> /api/articles/?source=domain.com - Filtrowanie po domenie
+    </div>
+    
+    <div class="api-endpoint">
+        <strong>GET</strong> /api/export/csv/ - Eksport do CSV
+    </div>
+    
+    <div class="api-endpoint">
+        <strong>GET</strong> /api/export/json/ - Eksport do JSON
+    </div>
+    
+    <div class="api-endpoint">
+        <strong>POST</strong> /api/scrape/ - Uruchom scrapowanie
+    </div>
+</div>
+
+<div class="api-section">
+    <h2>Management Commands</h2>
+    <p>Dostępne komendy Django:</p>
+    
+    <div class="api-endpoint">
+        <strong>python manage.py scrape_articles</strong> - Uruchom scrapowanie artykułów
+    </div>
+    
+    <div class="api-endpoint">
+        <strong>python manage.py scrape_articles --verbose</strong> - Uruchom z szczegółowymi informacjami
+    </div>
+</div>
+
+<div class="api-section">
+    <h2>Przykłady użycia API</h2>
+    <p>Przykłady wywołań API:</p>
+    
+    <div class="api-endpoint">
+        curl "http://127.0.0.1:8000/api/articles/"
+    </div>
+    
+    <div class="api-endpoint">
+        curl "http://127.0.0.1:8000/api/articles/?source=galicjaexpress.pl"
+    </div>
+    
+    <div class="api-endpoint">
+        curl "http://127.0.0.1:8000/api/articles/1/"
+    </div>
+</div>
+
+{% if recent_articles %}
+<div class="article-list">
+    <h2>Ostatnie artykuły</h2>
+    {% for article in recent_articles %}
+    <div class="article-item">
+        <div class="article-title">
+            <a href="{% url 'article_detail' article.id %}">{{ article.title }}</a>
+        </div>
+        <div class="article-meta">
+            {{ article.get_published_date_formatted }} | 
+            {{ article.website.domain }} | 
+            {{ article.get_status_display }}
+        </div>
+        <div class="article-excerpt">
+            {{ article.get_excerpt|truncatewords:20 }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% if recent_sessions %}
+<div class="article-list">
+    <h2>Ostatnie sesje crawlowania</h2>
+    {% for session in recent_sessions %}
+    <div class="article-item">
+        <div class="article-title">{{ session.name }}</div>
+        <div class="article-meta">
+            {{ session.website.domain }} | 
+            {{ session.scraped_articles }}/{{ session.total_urls }} | 
+            {{ session.get_status_display }}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+{% endblock %}

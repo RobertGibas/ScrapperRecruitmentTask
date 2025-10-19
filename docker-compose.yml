@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: crawler_db
+      POSTGRES_USER: crawler_user
+      POSTGRES_PASSWORD: crawler_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U crawler_user -d crawler_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web:
+    build: .
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+    volumes:
+      - .:/app
+      - static_volume:/app/static
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgresql://crawler_user:crawler_password@db:5432/crawler_db
+      - SECRET_KEY=django-insecure-docker-secret-key-change-in-production
+    restart: unless-stopped
+
+  scraper:
+    build: .
+    command: python manage.py scrape_articles --verbose
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - web
+    environment:
+      - DEBUG=1
+      - DATABASE_URL=postgresql://crawler_user:crawler_password@db:5432/crawler_db
+      - SECRET_KEY=django-insecure-docker-secret-key-change-in-production
+    profiles:
+      - scraping
+
+volumes:
+  postgres_data:
+  static_volume:
+

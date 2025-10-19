@@ -1,0 +1,73 @@
+{% extends 'crawler/base.html' %}
+
+{% block title %}{{ article.title }} - Crawler Artykułów{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 20px;">
+    <a href="{% url 'articles_list' %}" style="color: #007bff; text-decoration: none;">← Powrót do listy artykułów</a>
+</div>
+
+<div class="article-item" style="padding: 30px;">
+    <h1 style="margin-top: 0; color: #333;">{{ article.title }}</h1>
+    
+    <div class="article-meta" style="font-size: 1.1em; margin: 20px 0;">
+        <strong>{{ article.website.domain }}</strong> | 
+        <strong>{{ article.get_published_date_formatted }}</strong> | 
+        {{ article.get_word_count }} słów | 
+        <span style="color: {% if article.status == 'success' %}#28a745{% else %}#dc3545{% endif %};">
+            {{ article.get_status_display }}
+        </span>
+    </div>
+    
+    <div style="margin: 20px 0;">
+        <a href="{{ article.url }}" target="_blank" style="background-color: #007bff; color: white; padding: 10px 20px; text-decoration: none; border-radius: 4px;">
+            🔗 Otwórz oryginalny artykuł
+        </a>
+    </div>
+    
+    {% if article.error_message %}
+    <div class="error" style="margin: 20px 0;">
+        <h3>Błąd scrapowania</h3>
+        <p>{{ article.error_message }}</p>
+    </div>
+    {% endif %}
+    
+    {% if article.plain_text_content %}
+    <div style="margin: 30px 0;">
+        <h2>Treść artykułu (Plain Text)</h2>
+        <div style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; line-height: 1.6; white-space: pre-wrap;">{{ article.plain_text_content }}</div>
+    </div>
+    {% endif %}
+    
+    {% if article.original_content %}
+    <div style="margin: 30px 0;">
+        <h2>Oryginalna treść (HTML)</h2>
+        <details>
+            <summary style="cursor: pointer; padding: 10px; background-color: #e9ecef; border-radius: 4px; margin-bottom: 10px;">
+                Kliknij aby rozwinąć HTML
+            </summary>
+            <pre style="background-color: #f8f9fa; padding: 20px; border-radius: 8px; overflow-x: auto; font-size: 0.9em;"><code>{{ article.original_content }}</code></pre>
+        </details>
+    </div>
+    {% endif %}
+    
+    <div style="margin: 30px 0; padding: 20px; background-color: #e9ecef; border-radius: 8px;">
+        <h3>Metadane techniczne</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px;">
+            <div><strong>URL:</strong><br>{{ article.url }}</div>
+            <div><strong>Scrapowano:</strong><br>{{ article.scraped_at|date:"d.m.Y H:i:s" }}</div>
+            {% if article.http_status_code %}<div><strong>Kod HTTP:</strong><br>{{ article.http_status_code }}</div>{% endif %}
+            {% if article.response_time %}<div><strong>Czas odpowiedzi:</strong><br>{{ article.response_time }}s</div>{% endif %}
+            {% if article.content_length %}<div><strong>Rozmiar:</strong><br>{{ article.content_length }} bajtów</div>{% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="api-section">
+    <h3>API Endpoints dla tego artykułu</h3>
+    <div class="api-endpoint">
+        <a href="/api/articles/{{ article.id }}/" target="_blank">GET /api/articles/{{ article.id }}/</a> - JSON API
+    </div>
+</div>
+{% endblock %}
+

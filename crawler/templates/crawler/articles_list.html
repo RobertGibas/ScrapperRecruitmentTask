@@ -1,0 +1,86 @@
+{% extends 'crawler/base.html' %}
+
+{% block title %}Lista artykułów - Crawler Artykułów{% endblock %}
+
+{% block content %}
+<h2>Lista artykułów</h2>
+
+<form method="get" style="margin: 20px 0;">
+    <input type="text" name="search" placeholder="Szukaj w artykułach..." value="{{ search_query }}" style="padding: 10px; width: 300px;">
+    <button type="submit" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px;">Szukaj</button>
+    {% if search_query %}
+        <a href="{% url 'articles_list' %}" style="margin-left: 10px; color: #666;">Wyczyść</a>
+    {% endif %}
+</form>
+
+<div class="stats">
+    <div class="stat-card">
+        <div class="stat-number">{{ page_obj.paginator.count }}</div>
+        <div class="stat-label">Wszystkich artykułów</div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-number">{{ page_obj.number }}</div>
+        <div class="stat-label">Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}</div>
+    </div>
+</div>
+
+{% if page_obj %}
+    {% for article in page_obj %}
+    <div class="article-item">
+        <div class="article-title">
+            <a href="{% url 'article_detail' article.id %}">{{ article.title }}</a>
+        </div>
+        <div class="article-meta">
+            <strong>{{ article.website.domain }}</strong> | 
+            {{ article.get_published_date_formatted }} | 
+            {{ article.get_word_count }} słów | 
+            <span style="color: {% if article.status == 'success' %}#28a745{% else %}#dc3545{% endif %};">
+                {{ article.get_status_display }}
+            </span>
+        </div>
+        <div class="article-excerpt">
+            {{ article.get_excerpt|truncatewords:30 }}
+        </div>
+        <div style="margin-top: 10px;">
+            <a href="{{ article.url }}" target="_blank" style="color: #007bff; text-decoration: none;">🔗 Otwórz oryginalny artykuł</a>
+        </div>
+    </div>
+    {% endfor %}
+
+    {% if page_obj.has_other_pages %}
+    <div style="text-align: center; margin: 30px 0;">
+        {% if page_obj.has_previous %}
+            <a href="?page=1{% if search_query %}&search={{ search_query }}{% endif %}" style="margin-right: 10px;">« Pierwsza</a>
+            <a href="?page={{ page_obj.previous_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" style="margin-right: 10px;">‹ Poprzednia</a>
+        {% endif %}
+        
+        <span style="margin: 0 20px;">
+            Strona {{ page_obj.number }} z {{ page_obj.paginator.num_pages }}
+        </span>
+        
+        {% if page_obj.has_next %}
+            <a href="?page={{ page_obj.next_page_number }}{% if search_query %}&search={{ search_query }}{% endif %}" style="margin-left: 10px;">Następna ›</a>
+            <a href="?page={{ page_obj.paginator.num_pages }}{% if search_query %}&search={{ search_query }}{% endif %}" style="margin-left: 10px;">Ostatnia »</a>
+        {% endif %}
+    </div>
+    {% endif %}
+{% else %}
+    <div class="error">
+        <h3>Brak artykułów</h3>
+        <p>Nie znaleziono żadnych artykułów spełniających kryteria wyszukiwania.</p>
+    </div>
+{% endif %}
+
+<div class="api-section">
+    <h3>🔗 Linki API</h3>
+    <div class="api-endpoint">
+        <a href="/api/articles/" target="_blank">GET /api/articles/</a> - JSON API
+    </div>
+    <div class="api-endpoint">
+        <a href="/api/export/csv/" target="_blank">GET /api/export/csv/</a> - Eksport CSV
+    </div>
+    <div class="api-endpoint">
+        <a href="/api/export/json/" target="_blank">GET /api/export/json/</a> - Eksport JSON
+    </div>
+</div>
+{% endblock %}
