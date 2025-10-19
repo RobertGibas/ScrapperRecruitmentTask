@@ -59,18 +59,14 @@ class ArticleModelTest(TestCase):
             status='success'
         )
         
-        # Test get_word_count
         self.assertEqual(article.get_word_count(), 5)
         
-        # Test get_published_date_formatted
         formatted_date = article.get_published_date_formatted()
         self.assertEqual(formatted_date, "14.10.2024 10:30:00")
         
-        # Test get_excerpt
         excerpt = article.get_excerpt(10)
         self.assertLessEqual(len(excerpt.split()), 10)
         
-        # Test has_content
         self.assertTrue(article.has_content())
     
     def test_article_str(self):
@@ -116,11 +112,9 @@ class CrawlSessionModelTest(TestCase):
             scraped_articles=7
         )
         
-        # Test get_progress_percentage
         progress = session.get_progress_percentage()
         self.assertEqual(progress, 70.0)
         
-        # Test is_completed
         self.assertFalse(session.is_completed())
         
         session.status = 'completed'

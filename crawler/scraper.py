@@ -514,6 +514,5 @@ class ArticleScraper:
         return results
 
 def scrape_articles():
-    """Główna funkcja do scrapowania artykułów"""
     scraper = ArticleScraper()
     return scraper.scrape_all_articles()

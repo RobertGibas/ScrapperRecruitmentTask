@@ -32,7 +32,6 @@ def home(request):
     return render(request, 'crawler/home.html', context)
 
 def articles_list_api(request):
-    """GET /articles/ - zwraca listę wszystkich artykułów"""
     try:
         source = request.GET.get('source', '')
         
@@ -225,7 +224,6 @@ def export_articles_json_api(request):
         }, status=500)
 
 def articles_list(request):
-    """Lista artykułów - interfejs web"""
     articles = Article.objects.select_related('website').order_by('-published_date_normalized')
     
     search_query = request.GET.get('search', '')
